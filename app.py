@@ -98,7 +98,7 @@ if api_key:
             """
             
             message = client.messages.create(
-                model="claude-3-opus-20240229",
+                model="claude-3-haiku-20240307",
                 max_tokens=1000,
                 messages=[{"role": "user", "content": prompt}]
             )
@@ -162,7 +162,7 @@ if api_key:
                 """
                 
                 message_brief = client.messages.create(
-                    model="claude-3-opus-20240229",
+                    model="claude-3-haiku-20240307",
                     max_tokens=2000,
                     messages=[{"role": "user", "content": brief_prompt}]
                 )
