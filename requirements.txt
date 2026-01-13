@@ -1,0 +1,5 @@
+streamlit
+feedparser
+anthropic
+pandas
+beautifulsoup4
