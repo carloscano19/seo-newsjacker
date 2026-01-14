@@ -69,9 +69,19 @@ if api_key:
     # Cargar noticias
     df = fetch_rss_data(rss_urls)
     
-    # AÑADIR COLUMNA DE SELECCIÓN (Por defecto todo desmarcado para que tú elijas)
+   # AÑADIR COLUMNA DE SELECCIÓN (Por defecto todo desmarcado para que tú elijas)
     if 'Select' not in df.columns:
         df.insert(0, "Select", False)
+
+    # --- BOTONES MÁGICOS (SELECT ALL / DESELECT ALL) ---
+    col1, col2 = st.columns([1, 5]) # Hacemos dos columnas para los botones
+    with col1:
+        if st.button("✅ All"):
+            df["Select"] = True
+    with col2:
+        if st.button("❌ None"):
+            df["Select"] = False
+    # ---------------------------------------------------
 
     # MOSTRAR TABLA EDITABLE
     st.info("👇 Select the news items you want to analyze:")
