@@ -123,44 +123,44 @@ if api_key:
     st.subheader("✨ AI Trend Hunter")
     st.caption("Generate crypto-focused viral article titles based on current headlines")
     if st.button("🚀 Analyze Trends & Generate Viral Titles", type="primary"):
-    with st.spinner("Reading news, filtering noise, and brainstorming viral angles..."):
-        
-        # 1. VERIFICAR SELECCIÓN
-        if selected_news.empty:
-            st.error("⚠️ Selecciona al menos una noticia de la tabla para analizar.")
-            st.stop()
-
-        # 2. PREPARAR TEXTO (USANDO SOLO LAS NOTICIAS MARCADAS)
-        headlines_text = "\n".join([f"- {row['Title']} ({row['Source']})" for index, row in selected_news.iterrows()])
-
-        # 3. EL PROMPT (CON LAS REGLAS ANTIALUCINACIONES 🚫👻)
-        prompt = f"""
-        You are the Editor of 'Fantokens.com'.
-        Read these headlines from the crypto market:
-        {headlines_text}
-
-        Generate 10 Viral Article Titles based STRICTLY on the provided headlines.
-
-        CRITICAL RULES:
-        1. **STRICT SOURCE ADHERENCE**: You must ONLY use the topics, companies, coins, and events mentioned in the text above. 
-        2. **NO HALLUCINATIONS**: Do NOT bring in outside general topics (like generic 'Bitcoin rises', 'DeFi trends', or 'Ethereum updates') unless they are explicitly in the source text.
-        3. **DEEP DIVE**: If only one news item is provided, you MUST generate 10 different viral angles for that SINGLE story.
-           - Use different hooks: Fear, FOMO, Technology, Financial Impact, Quotes, Future Prediction.
-        4. Every title MUST be catchy, punchy, and click-worthy.
-
-        Return ONLY the clean list of 10 titles (no intro text).
-        """
-
-        # 4. LLAMADA A LA API (CLAUDE HAIKU)
-        message = client.messages.create(
-            model="claude-3-haiku-20240307",
-            max_tokens=1000,
-            messages=[{"role": "user", "content": prompt}]
-        )
-
-        # 5. GUARDAR RESULTADOS
-        raw_text = message.content[0].text
-        st.session_state.generated_titles = [line.strip() for line in raw_text.split('\n') if line.strip()]
+        with st.spinner("Reading news, filtering noise, and brainstorming viral angles..."):
+            
+            # 1. VERIFICAR SELECCIÓN
+            if selected_news.empty:
+                st.error("⚠️ Selecciona al menos una noticia de la tabla para analizar.")
+                st.stop()
+    
+            # 2. PREPARAR TEXTO (USANDO SOLO LAS NOTICIAS MARCADAS)
+            headlines_text = "\n".join([f"- {row['Title']} ({row['Source']})" for index, row in selected_news.iterrows()])
+    
+            # 3. EL PROMPT (CON LAS REGLAS ANTIALUCINACIONES 🚫👻)
+            prompt = f"""
+            You are the Editor of 'Fantokens.com'.
+            Read these headlines from the crypto market:
+            {headlines_text}
+    
+            Generate 10 Viral Article Titles based STRICTLY on the provided headlines.
+    
+            CRITICAL RULES:
+            1. **STRICT SOURCE ADHERENCE**: You must ONLY use the topics, companies, coins, and events mentioned in the text above. 
+            2. **NO HALLUCINATIONS**: Do NOT bring in outside general topics (like generic 'Bitcoin rises', 'DeFi trends', or 'Ethereum updates') unless they are explicitly in the source text.
+            3. **DEEP DIVE**: If only one news item is provided, you MUST generate 10 different viral angles for that SINGLE story.
+               - Use different hooks: Fear, FOMO, Technology, Financial Impact, Quotes, Future Prediction.
+            4. Every title MUST be catchy, punchy, and click-worthy.
+    
+            Return ONLY the clean list of 10 titles (no intro text).
+            """
+    
+            # 4. LLAMADA A LA API (CLAUDE HAIKU)
+            message = client.messages.create(
+                model="claude-3-haiku-20240307",
+                max_tokens=1000,
+                messages=[{"role": "user", "content": prompt}]
+            )
+    
+            # 5. GUARDAR RESULTADOS
+            raw_text = message.content[0].text
+            st.session_state.generated_titles = [line.strip() for line in raw_text.split('\n') if line.strip()]
     # MOSTRAR TÍTULOS (DISEÑO 2 COLUMNAS)
     if st.session_state.generated_titles:
         st.success("✅ Viral Angles Detected!")
