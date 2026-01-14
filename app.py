@@ -69,22 +69,34 @@ if api_key:
     # Cargar noticias
     df = fetch_rss_data(rss_urls)
     
-   # AÑADIR COLUMNA DE SELECCIÓN (Por defecto todo desmarcado para que tú elijas)
-    if 'Select' not in df.columns:
-        df.insert(0, "Select", False)
+  # 1. GESTIÓN DE ESTADO (MEMORIA)
+    if 'editor_key' not in st.session_state:
+        st.session_state.editor_key = 0
+    if 'default_selection' not in st.session_state:
+        st.session_state.default_selection = False
 
-    # --- BOTONES MÁGICOS (SELECT ALL / DESELECT ALL) ---
-    col1, col2 = st.columns([1, 5]) # Hacemos dos columnas para los botones
+    # 2. BOTONES MÁGICOS (Con recarga forzada)
+    col1, col2 = st.columns([1, 5])
     with col1:
         if st.button("✅ All"):
-            df["Select"] = True
+            st.session_state.default_selection = True
+            st.session_state.editor_key += 1
+            st.rerun()
     with col2:
         if st.button("❌ None"):
-            df["Select"] = False
-    # ---------------------------------------------------
+            st.session_state.default_selection = False
+            st.session_state.editor_key += 1
+            st.rerun()
 
-    # MOSTRAR TABLA EDITABLE
+    # 3. PREPARAR DATOS
+    if 'Select' not in df.columns:
+        df.insert(0, "Select", st.session_state.default_selection)
+    else:
+        df['Select'] = st.session_state.default_selection
+
+    # 4. MOSTRAR TABLA EDITABLE (Con clave dinámica)
     st.info("👇 Select the news items you want to analyze:")
+    
     edited_df = st.data_editor(
         df,
         column_config={
@@ -95,10 +107,11 @@ if api_key:
             ),
             "Link": st.column_config.LinkColumn("Link")
         },
-        disabled=["Source", "Title", "Published"], # Bloqueamos editar texto, solo deja el check
+        disabled=["Source", "Title", "Published"],
         hide_index=True,
         use_container_width=True,
-        height=400
+        height=400,
+        key=f"editor_{st.session_state.editor_key}"
     )
     
     # FILTRAR SOLO LAS ELEGIDAS
