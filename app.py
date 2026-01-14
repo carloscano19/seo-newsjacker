@@ -179,7 +179,7 @@ if api_key:
             for t in right_titles:
                 st.markdown(f"**• {t}**")
         
-      st.divider()
+st.divider()
 
 # C) GENERADOR DE BRIEFS (AHORA MULTI-SELECCIÓN Y FORMATO PRO 🌟)
 st.subheader("📝 SEO Content Brief Generator")
