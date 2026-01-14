@@ -99,18 +99,16 @@ if api_key:
     # B) GENERADOR DE TÍTULOS VIRALES
     st.subheader("✨ AI Trend Hunter")
     st.caption("Generate crypto-focused viral article titles based on current headlines")
-    
     if st.button("🚀 Analyze Trends & Generate Viral Titles", type="primary"):
         with st.spinner("Reading news, filtering noise, and brainstorming viral angles..."):
-            # Preparar contexto
-            # VERIFICAR SELECCIÓN (Si no hay nada, paramos)
-        if selected_news.empty:
-            st.error("⚠️ Selecciona al menos una noticia de la tabla para analizar.")
-            st.stop()
-
-        # USAR SOLO LAS SELECCIONADAS
-        headlines_text = "\n".join([f"- {row['Title']} ({row['Source']})" for index, row in selected_news.iterrows()])
             
+            # VERIFICAR SELECCIÓN (Si no hay nada, paramos)
+            if selected_news.empty:
+                st.error("⚠️ Selecciona al menos una noticia de la tabla para analizar.")
+                st.stop()
+
+            # USAR SOLO LAS SELECCIONADAS
+            headlines_text = "\n".join([f"- {row['Title']} ({row['Source']})" for index, row in selected_news.iterrows()])
             # EL PROMPT (FILTRO CRYPTO ACTIVADO)
             prompt = f"""
             You are the Editor of 'Fantokens.com'. 
