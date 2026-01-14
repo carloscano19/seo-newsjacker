@@ -151,15 +151,15 @@ if api_key:
         Return ONLY the clean list of 10 titles (no intro text).
         """
 
-        message = client.messages.create(
+       message = client.messages.create(
             model="claude-3-haiku-20240307",
             max_tokens=1000,
             messages=[{"role": "user", "content": prompt}]
         )
-            
-            # Guardar en memoria
-            raw_text = message.content[0].text
-            st.session_state.generated_titles = [line.strip() for line in raw_text.split('\n') if line.strip()]
+
+        # Guardar en memoria
+        raw_text = message.content[0].text
+        st.session_state.generated_titles = [line.strip() for line in raw_text.split('\n') if line.strip()]
 
     # MOSTRAR TÍTULOS (DISEÑO 2 COLUMNAS)
     if st.session_state.generated_titles:
