@@ -67,8 +67,18 @@ if api_key:
     client = anthropic.Anthropic(api_key=api_key)
     
     # Cargar noticias
-    df = fetch_rss_data(rss_urls)
+# --- GESTIÓN DE MEMORIA DE NOTICIAS (CACHE) ---
+    if 'news_db' not in st.session_state:
+        with st.spinner("📥 Downloading latest crypto news..."):
+            st.session_state.news_db = fetch_rss_data(rss_urls)
     
+    # Botón para forzar recarga manual si quieres
+    if st.sidebar.button("🔄 Refresh News Feed"):
+        st.session_state.news_db = fetch_rss_data(rss_urls)
+        st.rerun()
+
+    # Usamos la memoria en lugar de descargar de nuevo
+    df = st.session_state.news_db
   # 1. GESTIÓN DE ESTADO (MEMORIA)
     if 'editor_key' not in st.session_state:
         st.session_state.editor_key = 0
