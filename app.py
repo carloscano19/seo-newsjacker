@@ -150,7 +150,7 @@ if api_key:
                 [Educational/Technical but accessible]
                 
                 Article Structure
-                [H1, H2, H2, H2...]
+                [Provide a vertical list of bullet points for the headers]
                 
                 Keywords with Estimated Intent
                 [List 4-5 keywords]
