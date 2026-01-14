@@ -133,7 +133,7 @@ if api_key:
             # USAR SOLO LAS SELECCIONADAS
             headlines_text = "\n".join([f"- {row['Title']} ({row['Source']})" for index, row in selected_news.iterrows()])
             # EL PROMPT (FILTRO CRYPTO ACTIVADO)
-           # EL PROMPT (MODO EXPRIMIDOR 🍊)
+        # EL PROMPT (MODO EXPRIMIDOR 🍊)
         prompt = f"""
         You are the Editor of 'Fantokens.com'.
         Read these headlines from the crypto market:
@@ -150,12 +150,12 @@ if api_key:
 
         Return ONLY the clean list of 10 titles (no intro text).
         """
-            
-            message = client.messages.create(
-                model="claude-3-haiku-20240307",
-                max_tokens=1000,
-                messages=[{"role": "user", "content": prompt}]
-            )
+
+        message = client.messages.create(
+            model="claude-3-haiku-20240307",
+            max_tokens=1000,
+            messages=[{"role": "user", "content": prompt}]
+        )
             
             # Guardar en memoria
             raw_text = message.content[0].text
