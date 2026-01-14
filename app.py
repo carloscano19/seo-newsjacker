@@ -133,20 +133,23 @@ if api_key:
             # USAR SOLO LAS SELECCIONADAS
             headlines_text = "\n".join([f"- {row['Title']} ({row['Source']})" for index, row in selected_news.iterrows()])
             # EL PROMPT (FILTRO CRYPTO ACTIVADO)
-            prompt = f"""
-            You are the Editor of 'Fantokens.com'. 
-            Read these headlines from the crypto market:
-            {headlines_text}
+           # EL PROMPT (MODO EXPRIMIDOR 🍊)
+        prompt = f"""
+        You are the Editor of 'Fantokens.com'.
+        Read these headlines from the crypto market:
+        {headlines_text}
 
-            Generate 10 Viral Article Titles suitable for a crypto news site.
-            
-            CRITICAL RULES: 
-            1. Every single title MUST explicitly mention 'Crypto', 'Bitcoin', 'Token', 'Blockchain', 'DeFi' or a specific coin name. 
-            2. If a news item is about AI, Gold, or Tech, you MUST tie it back to how it affects Crypto markets. 
-            3. If there is no clear crypto angle, skip that news item.
-            
-            Return ONLY the clean list of 10 titles (no intro text).
-            """
+        Generate 10 Viral Article Titles based STRICTLY on the provided headlines.
+
+        CRITICAL RULES:
+        1. **STRICT SOURCE ADHERENCE**: You must ONLY use the topics, companies, coins, and events mentioned in the text above. 
+        2. **NO HALLUCINATIONS**: Do NOT bring in outside general topics (like generic 'Bitcoin rises', 'DeFi trends', or 'Ethereum updates') unless they are explicitly in the source text.
+        3. **DEEP DIVE**: If only one news item is provided, you MUST generate 10 different viral angles for that SINGLE story.
+           - Use different hooks: Fear, FOMO, Technology, Financial Impact, Quotes, Future Prediction.
+        4. Every title MUST be catchy, punchy, and click-worthy.
+
+        Return ONLY the clean list of 10 titles (no intro text).
+        """
             
             message = client.messages.create(
                 model="claude-3-haiku-20240307",
