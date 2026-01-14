@@ -68,7 +68,31 @@ if api_key:
     
     # Cargar noticias
     df = fetch_rss_data(rss_urls)
-    st.dataframe(df, use_container_width=True, height=400)
+    
+    # AÑADIR COLUMNA DE SELECCIÓN (Por defecto todo desmarcado para que tú elijas)
+    if 'Select' not in df.columns:
+        df.insert(0, "Select", False)
+
+    # MOSTRAR TABLA EDITABLE
+    st.info("👇 Select the news items you want to analyze:")
+    edited_df = st.data_editor(
+        df,
+        column_config={
+            "Select": st.column_config.CheckboxColumn(
+                "Analyze?",
+                help="Select to include in AI analysis",
+                default=False,
+            ),
+            "Link": st.column_config.LinkColumn("Link")
+        },
+        disabled=["Source", "Title", "Published"], # Bloqueamos editar texto, solo deja el check
+        hide_index=True,
+        use_container_width=True,
+        height=400
+    )
+    
+    # FILTRAR SOLO LAS ELEGIDAS
+    selected_news = edited_df[edited_df["Select"] == True]
     
     st.divider()
 
@@ -79,7 +103,13 @@ if api_key:
     if st.button("🚀 Analyze Trends & Generate Viral Titles", type="primary"):
         with st.spinner("Reading news, filtering noise, and brainstorming viral angles..."):
             # Preparar contexto
-            headlines_text = "\n".join([f"- {row['Title']} ({row['Source']})" for index, row in df.iterrows()])
+            # VERIFICAR SELECCIÓN (Si no hay nada, paramos)
+        if selected_news.empty:
+            st.error("⚠️ Selecciona al menos una noticia de la tabla para analizar.")
+            st.stop()
+
+        # USAR SOLO LAS SELECCIONADAS
+        headlines_text = "\n".join([f"- {row['Title']} ({row['Source']})" for index, row in selected_news.iterrows()])
             
             # EL PROMPT (FILTRO CRYPTO ACTIVADO)
             prompt = f"""
