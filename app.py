@@ -179,62 +179,89 @@ if api_key:
             for t in right_titles:
                 st.markdown(f"**• {t}**")
         
-        st.divider()
+      st.divider()
 
-        # C) GENERADOR DE BRIEFS
-        st.subheader("📝 Content Brief Generator")
-        st.caption("Select a winning title to generate a full SEO brief for your writers")
-        
-        selected_title = st.selectbox("Choose a title to generate a content brief:", st.session_state.generated_titles)
-        
-        if st.button("📄 Generate Detailed Brief"):
-            with st.spinner(f"Writing strategy for: {selected_title}..."):
+# C) GENERADOR DE BRIEFS (AHORA MULTI-SELECCIÓN Y FORMATO PRO 🌟)
+st.subheader("📝 SEO Content Brief Generator")
+
+# 1. MULTI-SELECTOR (Elige tantos como quieras)
+selected_titles_for_brief = st.multiselect(
+    "👇 Select the titles you want to generate briefs for (Pick 1, 3, or all!):",
+    options=st.session_state.generated_titles
+)
+
+# 2. BOTÓN DE GENERACIÓN MASIVA
+if st.button("📄 Generate Content Briefs", type="primary"):
+    if not selected_titles_for_brief:
+        st.warning("⚠️ Please select at least one title to generate a brief.")
+    else:
+        # Barra de progreso para dar feedback visual
+        progress_bar = st.progress(0)
+        total = len(selected_titles_for_brief)
+
+        for i, title in enumerate(selected_titles_for_brief):
+            
+            # Actualizamos barra
+            progress_bar.progress((i + 1) / total)
+            
+            with st.spinner(f"🧠 Designing Strategy for: '{title}'..."):
+                
+                # PROMPT "PREMIUM" CON FORMATO DE TABLAS Y H-TAGS
                 brief_prompt = f"""
-                Create a Content Brief for the article title: '{selected_title}'.
+                You are a Senior SEO Strategist for a top-tier Crypto News Outlet.
+                Create a detailed **SEO Content Brief** for the following article title:
                 
-                Follow this EXACT template structure:
+                TOPIC: "{title}"
+
+                STRICT OUTPUT STRUCTURE (Use Markdown):
                 
-                Post Objective
-                [Explain the goal]
+                ### 🎯 Post Objective
+                [Explain clearly what the reader should learn or do. Be specific.]
+
+                ### 👥 Target Audience
+                * **Primary:** [e.g. Day Traders, HODLers, Institutional Investors]
+                * **Secondary:** [e.g. Newbies, Tech enthusiasts]
                 
-                Target Audience
-                [Primary and Secondary]
-                
-                Tone
-                [Educational/Technical but accessible]
-                
-                Article Structure
-                [Provide a vertical list of bullet points for the headers]
-                
-                Keywords with Estimated Intent
-                [List 4-5 keywords]
-                
-                LLM Optimization Notes
-                [Include analogies like "liquidity = water flow"]
-                
-                IMPORTANT: Use BOLD text for key terms. No financial advice.
+                ### 🎨 Tone & Style
+                * [e.g. Authoritative, Urgent, Educational, Speculative, Warning]
+                * *Constraint:* Explain technical terms simply but maintain professional depth.
+
+                ### 🏗️ Article Structure (H-Tags)
+                * **H1:** [Write the final polished H1 Title]
+                * **H2:** [Key Section 1]
+                * **H2:** [Key Section 2]
+                * **H2:** [Key Section 3]
+                * **H3:** [Sub-points if needed]
+                * **Conclusion:** [Key takeaway + Call to Action]
+
+                ### 🔑 Keywords Strategy
+                | Keyword | Intent | Search Vol (Est) | Context |
+                |---------|--------|------------------|---------|
+                | [Main Keyword] | [Info/Trans] | High | [Where to use it] |
+                | [LSI Keyword 1] | [Info] | Med | [Context] |
+                | [LSI Keyword 2] | [Nav] | Low | [Context] |
+
+                ### 🤖 LLM Optimization Notes
+                [Specific instructions for the AI writer: Metaphors to use ("Liquidity is like water"), pitfalls to avoid, things to emphasize strictly.]
                 """
-                
-                message_brief = client.messages.create(
+
+                # LLAMADA A LA API (Individual para cada brief)
+                brief_response = client.messages.create(
                     model="claude-3-haiku-20240307",
-                    max_tokens=2000,
+                    max_tokens=1500,
                     messages=[{"role": "user", "content": brief_prompt}]
                 )
                 
-                st.session_state.content_brief = message_brief.content[0].text
-        
-        # MOSTRAR Y DESCARGAR BRIEF
-        if st.session_state.content_brief:
-            with st.container(border=True):
-                st.markdown(st.session_state.content_brief)
-                
-                st.download_button(
-                    label="📥 Download Brief (Markdown)",
-                    data=st.session_state.content_brief,
-                    file_name="seo_content_brief.md",
-                    mime="text/markdown",
-                    use_container_width=True
-                )
+                brief_content = brief_response.content[0].text
 
-else:
-    st.warning("👈 Please enter your Anthropic API Key in the sidebar to start.")
+                # MOSTRAR RESULTADO EN UN DESPLEGABLE (EXPANDER)
+                with st.expander(f"📄 Brief: {title}", expanded=True):
+                    st.markdown(brief_content)
+                    st.download_button(
+                        label=f"⬇️ Download Brief ({i+1})",
+                        data=brief_content,
+                        file_name=f"brief_{i+1}.md",
+                        mime="text/markdown"
+                    )
+        
+        st.success("✅ All Briefs Generated Successfully! Ready for the writers.")
